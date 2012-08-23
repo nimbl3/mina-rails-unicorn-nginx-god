@@ -34,17 +34,24 @@ Example deployment to local vagrant virtual machine:
 # edit common settings and anything you like in config/deploy.rb
 # edit lib/mina/servers/vagrant.rb to match your server configuration
 mina vagrant init
+mina vagrant full_setup     # requires sudo privileges or sudoer user
+mina vagrant deploy
+mina vagrant nginx:restart  # or nginx:start
+mina vagrant god:start      # it will also run unicorn automagically
+```
+You should be up and running now. Yay!
+
+`full_setup` calls following tasks inside:
+```ruby
 mina vagrant setup
 mina vagrant setup_extras
 mina vagrant god:setup
 mina vagrant nginx:setup    # needs sudo. see lib/mina/nginx.rb:10
 mina vagrant config:upload
 mina vagrant config:link    # needs sudo to copy god and unicorn service control scripts
-mina vagrant deploy
-mina vagrant nginx:restart  # or nginx:start
-mina vagrant god:start      # it will also run unicorn automagically
 ```
-You should be up and running now. Yay!
+
+You can, of course, run them separately. Even more, you probably will do so, if you will find yourself in need of modifying some config files.
 
 What now?
 ---------
@@ -59,11 +66,13 @@ You can check God status:
 
 You can customize output of this command in lib/mina/extras.rb:33
 
-Just make sure you have no bash zombies, running around, eating your CPU. Just in case...
+**NB!** If you're running FreeBSD, do `set :term_mode, :exec` and after running Mina make sure you have no bash zombies, running around, eating your CPU. Just in case...
 
 To deploy next release, just run
 
     mina vagrant deploy
+
+(I'm still trying to figure out a way to use vagrant config by default, if no other specified)
 
 If you've changed some of the config files for god/unicorn/nginx, you can upload them to server with `mina vagrant config:upload`.
 

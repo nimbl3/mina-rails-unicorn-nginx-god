@@ -32,6 +32,17 @@ task :environment do
   }
 end
 
+desc "Set up server from the ground-up."
+task :full_setup do
+  set :sudo, true
+  invoke :setup
+  invoke :setup_extras
+  invoke :'god:setup'
+  invoke :'nginx:setup'
+  invoke :'config:upload'
+  invoke :'config:link'
+end
+
 desc "Deploys the current version to the server."
 task :deploy => [:environment] do
   deploy do
