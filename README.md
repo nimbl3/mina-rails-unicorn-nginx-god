@@ -42,7 +42,7 @@ mina vagrant god:start      # it will also run unicorn automagically
 You should be up and running now. Yay!
 
 `full_setup` calls following tasks inside:
-```ruby
+```bash
 mina vagrant setup
 mina vagrant setup_extras
 mina vagrant god:setup
