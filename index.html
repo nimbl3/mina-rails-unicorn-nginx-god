@@ -38,7 +38,7 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
         </div>
 
-        <h1>Mina + Rails + Unicorn + Nginx + God</h1>
+        <h1>Mina + Rails + Unicorn + nginx + God</h1>
 
 <h1></h1>
 
@@ -46,7 +46,7 @@
 
 <p>Deploys and updates Rails application and config files for <a href="http://unicorn.bogomips.org/">Unicorn</a>, <a href="http://wiki.nginx.org/Main">nginx</a>, and <a href="http://godrb.com/">God</a>.</p>
 
-<h2>"Why?"</h2>
+<h2>Why?</h2>
 
 <p>When I've started using Mina for deployment, these examples was the thing I needed most.</p>
 
@@ -56,7 +56,7 @@
 
 <p>So I thought, why not share? I hope it can be useful for somebody, so that one can see, learn, understand, and use.</p>
 
-<h2>"How?"</h2>
+<h2>How?</h2>
 
 <p>This example assumes following:</p>
 
@@ -73,12 +73,7 @@
 <span class="c"># edit common settings and anything you like in config/deploy.rb</span>
 <span class="c"># edit lib/mina/servers/vagrant.rb to match your server configuration</span>
 mina vagrant init
-mina vagrant setup
-mina vagrant setup_extras
-mina vagrant god:setup
-mina vagrant nginx:setup    <span class="c"># needs sudo. see lib/mina/nginx.rb:10</span>
-mina vagrant config:upload
-mina vagrant config:link    <span class="c"># needs sudo to copy god and unicorn service control scripts</span>
+mina vagrant full_setup     <span class="c"># requires sudo privileges or sudoer user</span>
 mina vagrant deploy
 mina vagrant nginx:restart  <span class="c"># or nginx:start</span>
 mina vagrant god:start      <span class="c"># it will also run unicorn automagically</span>
@@ -86,7 +81,19 @@ mina vagrant god:start      <span class="c"># it will also run unicorn automagic
 
 <p>You should be up and running now. Yay!</p>
 
-<h2>"What now?"</h2>
+<p><code>full_setup</code> calls following tasks inside:</p>
+
+<div class="highlight"><pre>mina vagrant setup
+mina vagrant setup_extras
+mina vagrant god:setup
+mina vagrant nginx:setup    <span class="c"># needs sudo. see lib/mina/nginx.rb:10</span>
+mina vagrant config:upload
+mina vagrant config:link    <span class="c"># needs sudo to copy god and unicorn service control scripts</span>
+</pre></div>
+
+<p>You can, of course, run them separately. Even more, you probably will do so, if you will find yourself in need of modifying some config files.</p>
+
+<h2>What now?</h2>
 
 <p>You can check God status:</p>
 
@@ -100,12 +107,14 @@ mina vagrant god:start      <span class="c"># it will also run unicorn automagic
 
 <p>You can customize output of this command in lib/mina/extras.rb:33</p>
 
-<p>Just make sure you have no bash zombies, running around, eating your CPU. Just in case...</p>
+<p><strong>NB!</strong> If you're running FreeBSD, do <code>set :term_mode, :exec</code> and after running Mina make sure you have no bash zombies, running around, eating your CPU. Just in case...</p>
 
 <p>To deploy next release, just run</p>
 
 <pre><code>mina vagrant deploy
 </code></pre>
+
+<p>(I'm still trying to figure out a way to use vagrant config by default, if no other specified)</p>
 
 <p>If you've changed some of the config files for god/unicorn/nginx, you can upload them to server with <code>mina vagrant config:upload</code>.</p>
 
@@ -117,9 +126,9 @@ mina vagrant god:start      <span class="c"># it will also run unicorn automagic
 
 <p>Just check out task files under lib/mina directory, most of the code there is quite self-explanatory!</p>
 
-<h2>"This code sucks!"</h2>
+<h2>This code sucks!</h2>
 
-<p>Well, most probably it is. But it is the code I'm successfully using for production deployment, and if you think you can improve
+<p>Well, most probably it is. But it is the code I'm currently using for production deployment, and if you think you can improve
 it or just have a better idea regarding anything described here - just send me an email or pull request.</p>
 
 <h2>Me</h2>
