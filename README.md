@@ -1,9 +1,9 @@
 # Mina + Rails + Unicorn + nginx + God
 ============================
 
-An example deployment configuration using (Mina)[https://github.com/nadarei/mina] for deployment.
+An example deployment configuration using [Mina](https://github.com/nadarei/mina) for deployment.
 
-Deploys and updates Rails application and config files for (Unicorn)[http://unicorn.bogomips.org/], (nginx)[http://wiki.nginx.org/Main], and (God)[http://godrb.com/].
+Deploys and updates Rails application and config files for [Unicorn](http://unicorn.bogomips.org/), [nginx](http://wiki.nginx.org/Main), and [God](http://godrb.com/).
 
 Why
 ---
@@ -28,22 +28,22 @@ This example assumes following:
 * probably something else I forgot at the moment. Don't expect flawless deploy from scratch anyway
 
 Example deployment to local vagrant virtual machine:
-
-    copy config/deploy.rb to $YOUR_APP/config/deploy.rb
-    copy lib/mina to $YOUR_APP/lib
-    edit common settings and anything you like in config/deploy.rb
-    edit lib/mina/servers/vagrant.rb to match your server configuration
-    mina vagrant init
-    mina vagrant setup
-    mina vagrant setup_extras
-    mina vagrant god:setup
-    mina vagrant nginx:setup    # needs sudo. see lib/mina/nginx.rb:10
-    mina vagrant config:upload
-    mina vagrant config:link    # needs sudo to copy god and unicorn service control scripts
-    mina vagrant deploy
-    mina vagrant nginx:restart  # or nginx:start
-    mina vagrant god:start      # it will also run unicorn automagically
-
+```bash
+# copy config/deploy.rb to $YOUR_APP/config/deploy.rb
+# copy lib/mina to $YOUR_APP/lib
+# edit common settings and anything you like in config/deploy.rb
+# edit lib/mina/servers/vagrant.rb to match your server configuration
+mina vagrant init
+mina vagrant setup
+mina vagrant setup_extras
+mina vagrant god:setup
+mina vagrant nginx:setup    # needs sudo. see lib/mina/nginx.rb:10
+mina vagrant config:upload
+mina vagrant config:link    # needs sudo to copy god and unicorn service control scripts
+mina vagrant deploy
+mina vagrant nginx:restart  # or nginx:start
+mina vagrant god:start      # it will also run unicorn automagically
+```
 You should be up and running now. Yay!
 
 What now?
@@ -83,6 +83,8 @@ it or just have a better idea regarding anything described here - just send me a
 Me
 --
 
-(Github)[https://github.com/alfuken]
-(Blog)[http://alfuken.tumblr.com/]
-(Twitter)[http://twitter.com/alfuken]
+[Github](https://github.com/alfuken)
+
+[Blog](http://alfuken.tumblr.com/)
+
+[Twitter](http://twitter.com/alfuken)
