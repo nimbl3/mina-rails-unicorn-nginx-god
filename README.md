@@ -1,12 +1,12 @@
 # Mina + Rails + Unicorn + nginx + God
-============================
+======================================
 
 An example deployment configuration using [Mina](https://github.com/nadarei/mina) for deployment.
 
 Deploys and updates Rails application and config files for [Unicorn](http://unicorn.bogomips.org/), [nginx](http://wiki.nginx.org/Main), and [God](http://godrb.com/).
 
-Why
----
+Why?
+----
 
 When I've started using Mina for deployment, these examples was the thing I needed most.
 
@@ -16,8 +16,8 @@ After a few days of tinkering I've came up with this setup.
 
 So I thought, why not share? I hope it can be useful for somebody, so that one can see, learn, understand, and use.
 
-How
----
+How?
+----
 
 This example assumes following:
 
@@ -47,6 +47,7 @@ mina vagrant god:start      # it will also run unicorn automagically
 You should be up and running now. Yay!
 
 What now?
+---------
 
 You can check God status:
 
@@ -74,8 +75,8 @@ You can also run `mina vagrant god:parse:unicorn` to see how god's unicorn confi
 
 Just check out task files under lib/mina directory, most of the code there is quite self-explanatory!
     
-This code sucks
----------------
+This code sucks!
+----------------
 
 Well, most probably it is. But it is the code I'm currently using for production deployment, and if you think you can improve
 it or just have a better idea regarding anything described here - just send me an email or pull request.
@@ -84,7 +85,5 @@ Me
 --
 
 [Github](https://github.com/alfuken)
-
 [Blog](http://alfuken.tumblr.com/)
-
 [Twitter](http://twitter.com/alfuken)
