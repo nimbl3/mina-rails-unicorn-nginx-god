@@ -8,18 +8,18 @@ Deploys and updates Rails application and config files for [Unicorn](http://unic
 Why?
 ----
 
-When I've started using Mina for deployment, these examples was the thing I needed most.
+When I've started using Mina for deployment, these examples were what I needed most.
 
 Not to just copy and use, but also to read and understand.
 
-After a few days of tinkering I've came up with this setup.
+After a few days of tinkering I've come up with this setup.
 
 So I thought, why not share? I hope it can be useful for somebody, so that one can see, learn, understand, and use.
 
 How?
 ----
 
-This example assumes following:
+This example assumes the following:
 
 * you're running Ubuntu in Vagrant locally (quite nice tool I'd say. Check out [RBates Railscast](http://railscasts.com/episodes/292-virtual-machines-with-vagrant) on this subject)
 * you already have a user, that will be running deployment and all the server stuff
@@ -51,7 +51,7 @@ mina vagrant config:upload
 mina vagrant config:link    # needs sudo to copy god and unicorn service control scripts
 ```
 
-You can, of course, run them separately. Even more, you probably will do so, if you will find yourself in need of modifying some config files.
+You can, of course, run them separately. Even more, you probably will do so, if you find yourself in need of modifying some config files.
 
 What now?
 ---------
@@ -60,7 +60,7 @@ You can check God status:
 
     mina vagrant god:status
 
-...or overall processes status/health:
+...or overall processes' status/health:
 
     mina vagrant health
 
@@ -76,19 +76,19 @@ To deploy next release, just run
 
 If you've changed some of the config files for god/unicorn/nginx, you can upload them to server with `mina vagrant config:upload`.
 
-If changed code includes unicorn or god control script (service), you will also need to run `mina vagrant config:link`, which require sudo privileges. Keep in mind, that any nginx controlling task also requires sudo! Those are: stop, start, restart, reload, and status.
+If changed code includes unicorn or god control script (service), you will also need to run `mina vagrant config:link`, that requires sudo privileges. Keep in mind, that any nginx controlling task also requires sudo! Those are: stop, start, restart, reload, and status.
 
-Individual tasks also available, like `god:upload`, or `unicorn:link`.
+Individual tasks are also available, like `god:upload`, or `unicorn:link`.
 
-You can also run `mina vagrant god:parse:unicorn` to see how god's unicorn config file will look like without uploading it to server. Very useful for debugging!
+You can as well run `mina vagrant god:parse:unicorn` to see how god's unicorn config file will look like without uploading it to server. Very useful for debugging!
 
 Just check out task files under lib/mina directory, most of the code there is quite self-explanatory!
     
 This code sucks!
 ----------------
 
-Well, most probably it is. But it is the code I'm currently using for production deployment, and if you think you can improve
-it or just have a better idea regarding anything described here - just send me an email or pull request.
+Well, most probably it does. But it is the code I'm currently using for production deployment, and if you think you can improve
+it or just have a better idea regarding anything described here - send me an email or pull request.
 
 Me
 --
