@@ -1,21 +1,28 @@
-namespace :config do
-  desc "Symlink all configs"
-  task :link do
-    set :sudo, true
-    invoke :'god:link'
-    invoke :'unicorn:link'
-    invoke :'nginx:link'
-  end
+task :setup do
+  invoke :create_extra_paths
+  invoke :'god:setup'
+  invoke :'god:upload'
+  invoke :'unicorn:upload'
+  invoke :'nginx:upload'
 
-  desc "Upload all configs"
-  task :upload do
-    invoke :'god:upload'
-    invoke :'unicorn:upload'
-    invoke :'nginx:upload'
+  if sudoer?
+    queue %{echo "-----> (!!!) You now need to run 'mina sudo_setup' to run the parts that require sudoer user (!!!)"}
+  else
+    invoke :sudo_setup
   end
 end
 
-task :setup_extras do
+desc 'Invoke setup tasks, that requires sudo privileges'
+task :sudo_setup do
+  invoke :sudo
+  invoke :'god:link'
+  invoke :'unicorn:link'
+  invoke :'nginx:setup'
+  invoke :'nginx:link'
+end
+
+desc 'Create extra paths for shared configs, pids, sockets, etc.'
+task :create_extra_paths do
   queue 'echo "-----> Create configs path"'
   queue echo_cmd "mkdir -p #{config_path}"
 
@@ -25,8 +32,8 @@ task :setup_extras do
   end
 
   queue 'echo "-----> Create PID and Sockets paths"'
-  queue echo_cmd "mkdir -p #{pids_path} && chmod +rw #{pids_path}"
-  queue echo_cmd "mkdir -p #{sockets_path} && chmod +rw #{sockets_path}"
+  queue echo_cmd "mkdir -p #{pids_path} && chown #{user}:#{group} #{pids_path} && chmod +rw #{pids_path}"
+  queue echo_cmd "mkdir -p #{sockets_path} && chown #{user}:#{group} #{sockets_path} && chmod +rw #{sockets_path}"
 end
 
 task :health do
@@ -35,13 +42,9 @@ end
 
 task :sudo do
   set :sudo, true
+  set :term_mode, :system # :pretty doesn't seem to work with sudo well
 end
 
-###############################################################################
-# Helpers
-###############################################################################
-
-# Parse config template, echo() them on the server, and check if command succeeded
 def upload_template(desc, tpl, destination)
   contents = parse_template(tpl)
   queue %{echo "-----> Put #{desc} file to #{destination}"}
@@ -49,29 +52,29 @@ def upload_template(desc, tpl, destination)
   queue check_exists(destination)
 end
 
-# Parse config template and escape some characters for safe bash echo()
 def parse_template(file)
   erb("#{config_templates_path}/#{file}.erb").gsub('"','\\"').gsub('`','\\\\`').gsub('$','\\\\$')
 end
 
-check_response = 'then echo "----->   SUCCESS"; else echo "----->   FAILED"; fi'
+def check_response
+  'then echo "----->   SUCCESS"; else echo "----->   FAILED"; fi'
+end
 
-# Self-explanatory
 def check_exists(destination)
   %{if [[ -s "#{destination}" ]]; #{check_response}}
 end
 
 def check_ownership(u, g, destination)
   %{
-    oll=(`ls -l #{destination}`)
-    if [[ -s "#{destination}" ]] && [[ ${oll[2]} == '#{u}' ]] && [[ ${oll[3]} == '#{g}' ]]; #{check_response}
+    file_info=(`ls -l #{destination}`)
+    if [[ -s "#{destination}" ]] && [[ ${file_info[2]} == '#{u}' ]] && [[ ${file_info[3]} == '#{g}' ]]; #{check_response}
   }
 end
 
 def check_exec_and_ownership(u, g, destination)
   %{
-    oll=(`ls -l #{destination}`)
-    if [[ -s "#{destination}" ]] && [[ -x "#{destination}" ]] && [[ ${oll[2]} == '#{u}' ]] && [[ ${oll[3]} == '#{g}' ]]; #{check_response}
+    file_info=(`ls -l #{destination}`)
+    if [[ -s "#{destination}" ]] && [[ -x "#{destination}" ]] && [[ ${file_info[2]} == '#{u}' ]] && [[ ${file_info[3]} == '#{g}' ]]; #{check_response}
   }
 end
 
@@ -79,7 +82,7 @@ def check_symlink(destination)
   %{if [[ -h "#{destination}" ]]; #{check_response}}
 end
 
-# Override default Mina ssh_command to be able to log in as sudoer, when needed
+# Allow to run some tasks as different (sudoer) user when sudo required
 module Mina
   module Helpers
     def ssh_command

@@ -13,9 +13,9 @@ GOD_LOG="<%= logs_path %>/god.log"
 GOD_CONF="<%= god_global %>"
 GOD_BIN="<%= god_bin %>"
 
-source "<%= rvm_path %>"
+<%= "source #{rvm_path}" unless rvm_string.nil? %>
 cd $APP_ROOT || exit 1
-rvm use <%= rvm_string %>
+<%= "rvm use #{rvm_string}" unless rvm_string.nil? %>
 
 case "$1" in
     start)

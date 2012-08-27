@@ -8,7 +8,7 @@ namespace :unicorn do
 
   desc "Relocate unicorn script file"
   task :link do
-    set :sudo, true
+    invoke :sudo
     queue 'echo "-----> Relocate unicorn script file"'
     queue echo_cmd %{sudo cp "#{config_path}/unicorn.sh" "#{unicorn_script}" && sudo chown #{unicorn_user}:#{unicorn_group} #{unicorn_script} && sudo chmod u+x #{unicorn_script}}
     queue check_ownership unicorn_user, unicorn_group, unicorn_script

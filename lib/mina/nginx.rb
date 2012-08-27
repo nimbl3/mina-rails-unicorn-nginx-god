@@ -5,7 +5,7 @@
 namespace :nginx do
   desc "Create configuration and other files"
   task :setup do
-    set :sudo, true
+    invoke :sudo
     queue echo_cmd "mkdir -p #{nginx_log_path}"
     queue echo_cmd "sudo chown #{nginx_user}:#{nginx_group} #{nginx_log_path}"
   end
@@ -15,7 +15,7 @@ namespace :nginx do
   
   desc "Symlink config file"
   task :link do
-    set :sudo, true
+    invoke :sudo
     queue %{echo "-----> Symlink nginx config file"}
     queue echo_cmd %{sudo ln -fs "#{config_path}/nginx.conf" "#{nginx_config}"}
     queue check_symlink nginx_config
@@ -36,30 +36,11 @@ namespace :nginx do
     puts erb("#{config_templates_path}/nginx.conf.erb")
   end
   
-  ### Control #################################################################
-  
-  desc "Restart nginx"
-  task :restart do
-    queue "sudo service nginx restart"
-  end
-  
-  desc "Reload nginx"
-  task :reload do
-    queue "sudo service nginx reload"
-  end
-  
-  desc "Stop nginx"
-  task :stop do
-    queue "sudo service nginx stop"
-  end
-  
-  desc "Start nginx"
-  task :start do
-    queue "sudo service nginx start"
-  end
-  
-  desc "Show nginx status"
-  task :status do
-    queue "sudo service nginx status"
+  %w(stop start restart reload status).each do |action|
+    desc "#{action.capitalize} Nginx"
+    task action.to_sym do
+      queue %{echo "-----> #{action.capitalize} Nginx"}
+      queue echo_cmd "sudo service nginx #{action}"
+    end
   end
 end

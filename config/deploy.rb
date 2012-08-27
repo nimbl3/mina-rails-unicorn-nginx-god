@@ -2,14 +2,15 @@ $:.unshift './lib'
 require 'mina/bundler'
 require 'mina/rails'
 require 'mina/git'
+require 'mina/rvm'
 
 require 'mina/defaults'
 require 'mina/extras'
 require 'mina/god'
 require 'mina/unicorn'
 require 'mina/nginx'
-require "mina/servers/production"
-require "mina/servers/vagrant"
+
+Dir['lib/mina/servers/*.rb'].each { |f| load f }
 
 ###########################################################################
 # Common settings for all servers
@@ -17,41 +18,25 @@ require "mina/servers/vagrant"
 
 set :app,                'cool_app'
 set :repository,         'https://github.com/user_name/repo_name.git'
-set :deploy_server,      'production' #=> production, staging, demo, vagrant, you name it
 set :keep_releases,       9999        #=> I like to keep all my releases
+set :default_server,     :vagrant
 
 ###########################################################################
 # Tasks
 ###########################################################################
 
-task :environment do
-  queue %{
-    echo "-----> Using RVM environment '#{rvm_string!}'"
-    #{echo_cmd %{source #{rvm_path!}}} || exit 1
-    #{echo_cmd %{rvm use "#{rvm_string!}"}} || exit 1
-  }
-end
-
-desc "Set up server from the ground-up."
-task :full_setup do
-  set :sudo, true
-  invoke :setup
-  invoke :setup_extras
-  invoke :'god:setup'
-  invoke :'nginx:setup'
-  invoke :'config:upload'
-  invoke :'config:link'
-end
+set :server, ENV['to'] || default_server
+invoke :"env:#{server}"
 
 desc "Deploys the current version to the server."
-task :deploy => [:environment] do
+task :deploy do
   deploy do
     invoke :'git:clone'
     invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
     # invoke :'rails:db_migrate'         # I'm using MongoDB, not AR, so I don't need those
     # invoke :'rails:assets_precompile'  # I don't really like assets pipeline
-
+    
     to :launch do
       invoke :'unicorn:restart'
     end

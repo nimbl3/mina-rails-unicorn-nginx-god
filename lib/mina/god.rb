@@ -14,9 +14,8 @@ namespace :god do
 
   desc "Relocate god script file"
   task :link do
-    set :sudo, true
+    invoke :sudo
     queue 'echo "-----> Relocate god script file"'
-    # queue echo_cmd %{sudo rm #{god_script}}
     queue echo_cmd %{sudo cp "#{config_path}/god.sh" "#{god_script}" && sudo chown #{god_user}:#{god_group} #{god_script} && sudo chmod u+x #{god_script}}
     queue check_ownership god_user, god_group, god_script
   end
@@ -70,9 +69,7 @@ namespace :god do
     end
   end
   
-  ### Control #################################################################
-  
-  %w(start stop restart status).each do |action|
+  %w(stop start restart status).each do |action|
     desc "#{action.capitalize} God"
     task action.to_sym do
       queue %{echo "-----> #{action.capitalize} God"}

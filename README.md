@@ -32,37 +32,58 @@ Example deployment to local vagrant virtual machine:
 # copy config/deploy.rb to $YOUR_APP/config/deploy.rb
 # copy lib/mina to $YOUR_APP/lib
 # edit common settings and anything you like in config/deploy.rb
-# edit lib/mina/servers/vagrant.rb to match your server configuration
-mina vagrant init
-mina vagrant full_setup     # requires sudo privileges or sudoer user
-mina vagrant deploy
-mina vagrant nginx:restart  # or nginx:start
-mina vagrant god:start      # it will also run unicorn automagically
+# edit lib/mina/servers/*.rb to match your server configuration
+mina init
+mina setup          # Set up deploy server with paths, configs, etc. Requires sudo privileges or sudoer user
+mina deploy
+mina nginx:restart  # or nginx:start
+mina god:start      # it will also run unicorn automagically
 ```
 You should be up and running now. Yay!
 
-`full_setup` calls following tasks inside:
+All tasks by default will run for :default_server, which is :vagrant in this example. See config/deploy.rb lines 22 and 28-29
+When you'll need to run the same for production, add `to=server_config_name`, like this:
 ```bash
-mina vagrant setup
-mina vagrant setup_extras
-mina vagrant god:setup
-mina vagrant nginx:setup    # needs sudo. see lib/mina/nginx.rb:10
-mina vagrant config:upload
-mina vagrant config:link    # needs sudo to copy god and unicorn service control scripts
+mina init to=production
+mina setup to=production
+mina deploy to=production
+mina nginx:restart to=production
+mina god:start to=production
 ```
 
-You can, of course, run them separately. Even more, you probably will do so, if you find yourself in need of modifying some config files.
+`mina deploy to=production` sounds just right. :) Thanks [@rstacruz](http://github.com/rstacruz) for the hint!
+You can, of course, set the :default_server to anything you like.
+
+`setup` task also invokes these additional tasks:
+```bash
+create_extra_paths
+god:setup
+god:upload
+unicorn:upload
+nginx:upload
+```
+
+and if you don't set separate sudoer user, these tasks invoked as well, implying that current user have sudo rights (if he doesn't, you'll be prompted to run 'sudo_setup' task, which does exactly that):
+
+```bash
+god:link
+unicorn:link
+nginx:setup
+nginx:link
+```
+
+You can, of course, run them one by one. And you will eventually do so, if you find yourself in need of modifying some config files.
 
 What now?
 ---------
 
 You can check God status:
 
-    mina vagrant god:status
+    mina god:status
 
 ...or overall processes' status/health:
 
-    mina vagrant health
+    mina health
 
 You can customize output of this command in lib/mina/extras.rb:33
 
@@ -70,29 +91,28 @@ You can customize output of this command in lib/mina/extras.rb:33
 
 To deploy next release, just run
 
-    mina vagrant deploy
+    mina deploy
 
-(I'm still trying to figure out a way to use vagrant config by default, if no other specified)
+If you've changed some of the config files for god/unicorn/nginx, you can upload them to server with `mina config:upload`.
 
-If you've changed some of the config files for god/unicorn/nginx, you can upload them to server with `mina vagrant config:upload`.
-
-If changed code includes unicorn or god control script (service), you will also need to run `mina vagrant config:link`, that requires sudo privileges. Keep in mind, that any nginx controlling task also requires sudo! Those are: stop, start, restart, reload, and status.
+If changed code includes unicorn or god control script (service), you will also need to run `mina config:link`, that requires sudo privileges. Keep in mind, that any nginx controlling task also requires sudo! Those are: stop, start, restart, reload, and status.
 
 Individual tasks are also available, like `god:upload`, or `unicorn:link`.
 
-You can as well run `mina vagrant god:parse:unicorn` to see how god's unicorn config file will look like without uploading it to server. Very useful for debugging!
+You can as well run `mina god:parse:unicorn` to see how god's unicorn config file will look like without uploading it to server. Very useful for debugging!
 
 Just check out task files under lib/mina directory, most of the code there is quite self-explanatory!
     
-This code sucks!
-----------------
+Man, this code sucks!
+---------------------
 
-Well, most probably it does. But it is the code I'm currently using for production deployment, and if you think you can improve
+Probably. But it is the code I'm currently using for production deployment, and if you think you can improve
 it or just have a better idea regarding anything described here - send me an email or pull request.
 
 Me
 --
 
-[Github](https://github.com/alfuken)
-[Blog](http://alfuken.tumblr.com/)
-[Twitter](http://twitter.com/alfuken)
+* [Blog](http://alfuken.tumblr.com/)
+* [Twitter](http://twitter.com/alfuken)
+* [Github](https://github.com/alfuken)
+* [Github Page](http://alfuken.github.com/mina-rails-unicorn-nginx-god/)

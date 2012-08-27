@@ -19,12 +19,10 @@ export rvm_project_rvmrc=0
 # export rvm_gemset_create_on_use_flag=1
 export rvm_trust_rvmrcs_flag=1
 
-source "<%= rvm_path %>"
-
+<%= "source #{rvm_path}" unless rvm_string.nil? %>
 cd $APP_ROOT || exit 1
-# rvm rvmrc load
-# rvm reload
-rvm use <%= rvm_string %>
+<%= "rvm use #{rvm_string}" unless rvm_string.nil? %>
+
 old_pid="$PID.oldbin"
 
 # cd $APP_ROOT || exit 1

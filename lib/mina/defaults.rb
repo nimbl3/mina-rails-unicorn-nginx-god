@@ -2,10 +2,12 @@
 # Sensible defaults. You wouldn't want to change those in most of the cases
 ###########################################################################
 task :defaults do
+  set_default :term_mode,       :pretty
   set_default :rails_env,       'production'
   set_default :shared_paths,    ['tmp', 'log', 'public/system'] # last one is for paperclip
   set_default :branch,          'master'
-  set_default :rvm_string,      '1.9.3'
+  set_default :rvm_string,      nil
+  set_default :rvm_path,        nil
 
   set_default :sockets_path,    "#{deploy_to}/#{shared_path}/tmp/sockets"
   set_default :pids_path,       "#{deploy_to}/#{shared_path}/tmp/pids"
