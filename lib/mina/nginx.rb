@@ -9,10 +9,10 @@ namespace :nginx do
     queue echo_cmd "mkdir -p #{nginx_log_path}"
     queue echo_cmd "sudo chown #{nginx_user}:#{nginx_group} #{nginx_log_path}"
   end
-  
+
   desc "Upload and update (link) all nginx config file"
   task :update => [:upload, :link]
-  
+
   desc "Symlink config file"
   task :link do
     invoke :sudo
@@ -27,7 +27,7 @@ namespace :nginx do
   task :upload do
     upload_template 'nginx config', 'nginx.conf', "#{config_path}/nginx.conf"
   end
-  
+
   desc "Parses config file and outputs it to STDOUT (local task)"
   task :parse do
     puts "#"*80
@@ -35,7 +35,7 @@ namespace :nginx do
     puts "#"*80
     puts erb("#{config_templates_path}/nginx.conf.erb")
   end
-  
+
   %w(stop start restart reload status).each do |action|
     desc "#{action.capitalize} Nginx"
     task action.to_sym do

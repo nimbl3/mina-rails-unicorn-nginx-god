@@ -18,7 +18,7 @@ Dir['lib/mina/servers/*.rb'].each { |f| load f }
 
 set :app,                'cool_app'
 set :repository,         'https://github.com/user_name/repo_name.git'
-set :keep_releases,       9999        #=> I like to keep all my releases
+set :keep_releases,       10
 set :default_server,     :vagrant
 
 ###########################################################################
@@ -34,9 +34,9 @@ task :deploy do
     invoke :'git:clone'
     invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
-    # invoke :'rails:db_migrate'         # I'm using MongoDB, not AR, so I don't need those
-    # invoke :'rails:assets_precompile'  # I don't really like assets pipeline
-    
+    invoke :'rails:db_migrate'
+    invoke :'rails:assets_precompile'
+
     to :launch do
       invoke :'unicorn:restart'
     end
