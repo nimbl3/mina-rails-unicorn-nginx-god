@@ -4,6 +4,7 @@ task :setup do
   invoke :'god:upload'
   invoke :'unicorn:upload'
   invoke :'nginx:upload'
+  invoke :'config:upload'
 
   if sudoer?
     queue %{echo "-----> (!!!) You now need to run 'mina sudo_setup' to run the parts that require sudoer user (!!!)"}
@@ -51,6 +52,15 @@ def upload_template(desc, tpl, destination)
   queue %{echo "-----> Put #{desc} file to #{destination}"}
   queue %{echo "#{contents}" > #{destination}}
   queue check_exists(destination)
+end
+
+def upload_file(desc, file, destination)
+  File.open("#{local_config_path}/#{file}", "r") do |f|
+    contents = f.read
+    queue %{echo "-----> Put #{desc} file to #{destination}"}
+    queue %{echo "#{contents}" > #{destination}}
+    queue check_exists(destination)
+  end
 end
 
 def parse_template(file)

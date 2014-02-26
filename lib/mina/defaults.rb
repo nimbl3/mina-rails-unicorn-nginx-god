@@ -13,6 +13,7 @@ task :defaults do
   set_default :pids_path,       "#{deploy_to}/#{shared_path}/tmp/pids"
   set_default :logs_path,       "#{deploy_to}/#{shared_path}/log"
   set_default :config_templates_path, "lib/mina/templates"
+  set_default :local_config_path, "config"
   set_default :config_path,     "#{deploy_to}/#{shared_path}/config"
 
   set_default :god_script,      "#{services_path!}/god"
