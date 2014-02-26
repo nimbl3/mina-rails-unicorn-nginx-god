@@ -6,6 +6,8 @@ task :setup do
   invoke :'nginx:upload'
   invoke :'config:upload'
 
+  queue 'echo "-----> Add god and unicorn to your Gemfile please"'
+
   if sudoer?
     queue %{echo "-----> (!!!) You now need to run 'mina sudo_setup' to run the parts that require sudoer user (!!!)"}
   else
